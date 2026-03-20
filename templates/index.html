@@ -1,392 +1,1005 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SuccessLens 🔭</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SuccessLens</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-/* ── Reset ──────────────────────────────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{font-family:'DM Sans',sans-serif;background:#0b0f1a;color:#e2e8f0;height:100%;min-height:100vh}
-body{background-color:#0b0f1a;background-image:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(99,102,241,.18) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(20,184,166,.12) 0%,transparent 60%);background-attachment:fixed}
+/* ─── design tokens ─────────────────────────────────────────────────────── */
+:root {
+  --white:      #ffffff;
+  --ink:        #0f0f0f;
+  --ink-2:      #3a3a3a;
+  --ink-3:      #6b6b6b;
+  --ink-4:      #9a9a9a;
+  --rule:       #e8e8e8;
+  --rule-dark:  #d0d0d0;
+  --fill:       #f5f5f4;
+  --fill-hover: #efeeec;
+  --accent:     #2a5ce8;
+  --accent-bg:  #eef1fd;
+  --green:      #16a34a;
+  --green-bg:   #f0fdf4;
+  --red:        #dc2626;
+  --red-bg:     #fef2f2;
+  --amber:      #d97706;
+  --amber-bg:   #fffbeb;
+  --sidebar-w:  208px;
+  --r:          6px;
+  --r-lg:       10px;
+}
 
-/* ── Layout ─────────────────────────────────────────────────────────────────── */
-.app-shell{display:flex;min-height:100vh}
+/* ─── reset ─────────────────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { font-size:15px; -webkit-font-smoothing:antialiased }
+body {
+  font-family:'Geist',sans-serif;
+  font-weight:400;
+  color:var(--ink);
+  background:var(--white);
+  min-height:100vh;
+}
+a { color:inherit; text-decoration:none }
 
-/* ── Sidebar ────────────────────────────────────────────────────────────────── */
-.sidebar{width:230px;flex-shrink:0;background:#111827;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;padding:28px 20px 24px;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto}
-.sidebar-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.02em;background:linear-gradient(135deg,#818cf8 0%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
-.sidebar-tagline{font-size:0.72rem;color:#475569;letter-spacing:.06em;text-transform:uppercase;margin-bottom:24px}
-.sidebar hr{border:none;border-top:1px solid rgba(255,255,255,.07);margin:0 0 20px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:0.9rem;color:#64748b;transition:background .18s,color .18s;margin-bottom:3px;user-select:none;border:none;background:transparent;width:100%;text-align:left}
-.nav-item:hover{background:rgba(255,255,255,.05);color:#cbd5e1}
-.nav-item.active{background:rgba(129,140,248,.13);color:#818cf8}
-.nav-icon{font-size:1rem;width:20px;text-align:center}
-.sidebar-footer{margin-top:auto;padding-top:20px;font-size:0.72rem;color:#334155}
-.sidebar-footer b{color:#475569}
+/* ─── shell ──────────────────────────────────────────────────────────────── */
+.shell { display:flex; min-height:100vh }
 
-/* ── Main ───────────────────────────────────────────────────────────────────── */
-.main{margin-left:230px;flex:1;padding:40px 36px 60px;min-height:100vh}
+/* ─── sidebar ────────────────────────────────────────────────────────────── */
+.sidebar {
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--white);
+  border-right:1px solid var(--rule);
+  display:flex;
+  flex-direction:column;
+  padding:20px 0 24px;
+  position:fixed;
+  inset:0 auto 0 0;
+  z-index:200;
+  overflow-y:auto;
+}
 
-/* ── Page title ─────────────────────────────────────────────────────────────── */
-.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2.1rem;letter-spacing:-0.03em;color:#f1f5f9;margin-bottom:4px}
-.page-subtitle{font-size:0.88rem;color:#475569;margin-bottom:32px}
+.sb-brand {
+  padding:0 18px 20px;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:16px;
+}
+.sb-wordmark {
+  font-family:'Instrument Serif',serif;
+  font-size:1.25rem;
+  color:var(--ink);
+  letter-spacing:-.01em;
+  display:block;
+  margin-bottom:1px;
+}
+.sb-tag {
+  font-size:.68rem;
+  font-weight:500;
+  color:var(--ink-4);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
 
-/* ── KPI row ────────────────────────────────────────────────────────────────── */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.metric-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:22px 24px;transition:border-color .25s,transform .2s}
-.metric-card:hover{border-color:rgba(129,140,248,.35);transform:translateY(-2px)}
-.metric-label{font-size:0.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.metric-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#f1f5f9;line-height:1}
-.metric-accent{color:#818cf8}
-.metric-green{color:#34d399}
-.metric-red{color:#f87171}
+.sb-section-label {
+  font-size:.62rem;
+  font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  padding:0 18px 6px;
+  margin-top:4px;
+}
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 18px;
+  font-size:.82rem;
+  font-weight:400;
+  color:var(--ink-3);
+  cursor:pointer;
+  border:none;
+  background:transparent;
+  width:100%;
+  text-align:left;
+  border-radius:0;
+  transition:background .12s, color .12s;
+  position:relative;
+}
+.nav-item:hover { background:var(--fill); color:var(--ink) }
+.nav-item.active {
+  background:var(--fill);
+  color:var(--ink);
+  font-weight:500;
+}
+.nav-item.active::before {
+  content:'';
+  position:absolute;
+  left:0; top:4px; bottom:4px;
+  width:2px;
+  background:var(--accent);
+  border-radius:0 2px 2px 0;
+}
+.nav-dot {
+  width:5px; height:5px;
+  border-radius:50%;
+  background:var(--rule-dark);
+  flex-shrink:0;
+  transition:background .12s;
+}
+.nav-item.active .nav-dot,
+.nav-item:hover .nav-dot { background:var(--accent) }
 
-/* ── Section header ─────────────────────────────────────────────────────────── */
-.section-header{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;color:#cbd5e1;border-left:3px solid #818cf8;padding-left:12px;margin:32px 0 16px}
+.sb-footer {
+  margin-top:auto;
+  padding:16px 18px 0;
+  border-top:1px solid var(--rule);
+  font-size:.72rem;
+  color:var(--ink-4);
+  line-height:1.7;
+}
+.sb-footer strong { color:var(--ink-3); font-weight:500 }
 
-/* ── Charts ─────────────────────────────────────────────────────────────────── */
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.chart-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px}
-.chart-box img{width:100%;border-radius:8px;display:block}
+/* ─── main ───────────────────────────────────────────────────────────────── */
+.main {
+  margin-left:var(--sidebar-w);
+  flex:1;
+  min-width:0;
+  padding:0;
+}
 
-/* ── Pills ──────────────────────────────────────────────────────────────────── */
-.pill{display:inline-block;padding:3px 12px;border-radius:999px;font-size:0.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
-.pill-high{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
-.pill-medium{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
-.pill-low{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+/* ─── page header ────────────────────────────────────────────────────────── */
+.page-header {
+  padding:40px 44px 28px;
+  border-bottom:1px solid var(--rule);
+}
+.page-eyebrow {
+  font-size:.68rem;
+  font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.page-title {
+  font-family:'Instrument Serif',serif;
+  font-size:2rem;
+  color:var(--ink);
+  line-height:1.15;
+  letter-spacing:-.02em;
+}
+.page-title em {
+  font-style:italic;
+  color:var(--ink-3);
+}
+.page-sub {
+  font-size:.82rem;
+  color:var(--ink-3);
+  margin-top:6px;
+  line-height:1.5;
+}
 
-/* ── Divider ────────────────────────────────────────────────────────────────── */
-hr.divider{border:none;border-top:1px solid rgba(255,255,255,.07);margin:20px 0}
+/* ─── page body ──────────────────────────────────────────────────────────── */
+.page-body { padding:32px 44px 64px }
 
-/* ── Select ─────────────────────────────────────────────────────────────────── */
-select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e2e8f0;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;cursor:pointer;appearance:none;min-width:180px}
-select:focus{border-color:rgba(129,140,248,.5)}
-select option{background:#1e293b}
+/* ─── page visibility ────────────────────────────────────────────────────── */
+.page { display:none }
+.page.active { display:block }
 
-/* ── Table ──────────────────────────────────────────────────────────────────── */
-.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.07);margin-top:8px}
-table{width:100%;border-collapse:collapse;font-size:0.83rem}
-thead th{background:rgba(255,255,255,.05);color:#64748b;text-transform:uppercase;letter-spacing:.06em;font-size:0.7rem;padding:10px 14px;text-align:left;white-space:nowrap;position:sticky;top:0}
-tbody tr{border-top:1px solid rgba(255,255,255,.04);transition:background .15s}
-tbody tr:hover{background:rgba(255,255,255,.03)}
-tbody td{padding:9px 14px;color:#cbd5e1;white-space:nowrap}
+/* ─── stat row ───────────────────────────────────────────────────────────── */
+.stat-row {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--rule);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  margin-bottom:36px;
+}
+.stat-cell {
+  padding:20px 22px;
+  border-right:1px solid var(--rule);
+}
+.stat-cell:last-child { border-right:none }
+.stat-label {
+  font-size:.68rem;
+  font-weight:500;
+  color:var(--ink-4);
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.stat-value {
+  font-family:'Instrument Serif',serif;
+  font-size:2.1rem;
+  line-height:1;
+  letter-spacing:-.02em;
+  color:var(--ink);
+}
+.stat-value.accent { color:var(--accent) }
+.stat-value.green  { color:var(--green) }
+.stat-value.red    { color:var(--red) }
 
-/* ── Text input ─────────────────────────────────────────────────────────────── */
-.input-group{display:flex;gap:12px;align-items:center;margin-bottom:8px}
-input[type="text"]{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e2e8f0;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;width:280px}
-input[type="text"]:focus{border-color:rgba(129,140,248,.5)}
-input[type="text"]::placeholder{color:#475569}
-.btn{padding:10px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#818cf8,#6366f1);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:opacity .2s,transform .15s}
-.btn:hover{opacity:.88;transform:translateY(-1px)}
+/* ─── section label ──────────────────────────────────────────────────────── */
+.sec-label {
+  font-size:.68rem;
+  font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
 
-/* ── Sliders ────────────────────────────────────────────────────────────────── */
-.sliders-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:24px}
-.slider-group label{display:flex;justify-content:space-between;font-size:0.85rem;color:#94a3b8;margin-bottom:8px}
-.slider-group label span{color:#818cf8;font-weight:600}
-input[type="range"]{width:100%;-webkit-appearance:none;height:4px;background:rgba(255,255,255,.08);border-radius:999px;outline:none;cursor:pointer}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#818cf8,#34d399);cursor:pointer;box-shadow:0 0 6px rgba(129,140,248,.5)}
-input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#818cf8,#34d399);border:none;cursor:pointer}
+/* ─── chart grid ─────────────────────────────────────────────────────────── */
+.chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); border:1px solid var(--rule); border-radius:var(--r-lg); overflow:hidden; margin-bottom:36px }
+.chart-cell { background:var(--white); padding:22px }
+.chart-cell-label {
+  font-size:.68rem;
+  font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+.chart-cell img { width:100%; display:block; border-radius:4px }
 
-/* ── Progress bar ───────────────────────────────────────────────────────────── */
-.progress-wrap{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:12px 0 28px}
-.progress-bar{height:100%;background:linear-gradient(90deg,#818cf8,#34d399);border-radius:999px;transition:width .5s ease}
+/* ─── pills ──────────────────────────────────────────────────────────────── */
+.pill {
+  display:inline-flex;
+  align-items:center;
+  padding:2px 9px;
+  border-radius:999px;
+  font-size:.68rem;
+  font-weight:600;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.pill-high   { background:var(--green-bg);  color:var(--green) }
+.pill-medium { background:var(--amber-bg);  color:var(--amber) }
+.pill-low    { background:var(--red-bg);    color:var(--red) }
 
-/* ── Loader ─────────────────────────────────────────────────────────────────── */
-.loader{display:flex;align-items:center;gap:10px;color:#475569;font-size:0.85rem;padding:40px 0}
-.spinner{width:20px;height:20px;border:2px solid rgba(129,140,248,.2);border-top-color:#818cf8;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ─── filter bar ─────────────────────────────────────────────────────────── */
+.filter-bar {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.filter-label { font-size:.78rem; color:var(--ink-3) }
+.filter-select {
+  background:var(--white);
+  border:1px solid var(--rule-dark);
+  border-radius:var(--r);
+  color:var(--ink);
+  padding:7px 30px 7px 12px;
+  font-family:'Geist',sans-serif;
+  font-size:.82rem;
+  outline:none;
+  cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b6b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 10px center;
+  transition:border-color .12s;
+}
+.filter-select:focus { border-color:var(--accent) }
+.filter-select option { background:white }
+.result-count { font-size:.78rem; color:var(--ink-4); margin-left:auto }
 
-/* ── Alert ──────────────────────────────────────────────────────────────────── */
-.alert-warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:12px 18px;color:#fbbf24;font-size:0.88rem;margin-top:12px}
+/* ─── table ──────────────────────────────────────────────────────────────── */
+.table-wrap {
+  overflow-x:auto;
+  border:1px solid var(--rule);
+  border-radius:var(--r-lg);
+}
+table { width:100%; border-collapse:collapse; font-size:.78rem }
+thead th {
+  background:var(--fill);
+  color:var(--ink-4);
+  font-size:.62rem;
+  font-weight:600;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  padding:9px 14px;
+  text-align:left;
+  white-space:nowrap;
+  border-bottom:1px solid var(--rule);
+  position:sticky;
+  top:0;
+}
+tbody tr { border-bottom:1px solid var(--rule); transition:background .1s }
+tbody tr:last-child { border-bottom:none }
+tbody tr:hover { background:var(--fill) }
+tbody td { padding:10px 14px; color:var(--ink-2); white-space:nowrap }
 
-/* ── 3-col ──────────────────────────────────────────────────────────────────── */
-.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+/* ─── loader ─────────────────────────────────────────────────────────────── */
+.loader {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--ink-4);
+  font-size:.82rem;
+  padding:52px 0;
+}
+.spin {
+  width:16px; height:16px;
+  border:1.5px solid var(--rule-dark);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .6s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin { to { transform:rotate(360deg) } }
 
-/* ── Pages ──────────────────────────────────────────────────────────────────── */
-.page{display:none}
-.page.active{display:block}
+/* ─── alerts ─────────────────────────────────────────────────────────────── */
+.alert {
+  border-radius:var(--r);
+  padding:10px 16px;
+  font-size:.82rem;
+  line-height:1.5;
+}
+.alert-warn { background:var(--amber-bg); color:var(--amber); border:1px solid #fde68a }
+.alert-err  { background:var(--red-bg);   color:var(--red);   border:1px solid #fca5a5 }
 
-/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#1e293b;border-radius:3px}
+/* ─── divider ────────────────────────────────────────────────────────────── */
+.rule { border:none; border-top:1px solid var(--rule); margin:28px 0 }
 
-/* ── Responsive ─────────────────────────────────────────────────────────────── */
-@media(max-width:900px){
-  .sidebar{width:60px;padding:20px 10px}
-  .nav-label,.sidebar-brand,.sidebar-tagline,.sidebar hr,.sidebar-footer{display:none}
-  .main{margin-left:60px;padding:24px 18px 40px}
-  .kpi-row{grid-template-columns:repeat(2,1fr)}
-  .charts-row,.sliders-grid,.three-col{grid-template-columns:1fr}
+/* ════════════════════════════════════════════════════════════
+   USER EXPLORER
+   ════════════════════════════════════════════════════════════ */
+.search-row {
+  display:flex;
+  gap:8px;
+  margin-bottom:32px;
+  flex-wrap:wrap;
+}
+.search-input {
+  flex:1;
+  min-width:200px;
+  max-width:360px;
+  background:var(--white);
+  border:1px solid var(--rule-dark);
+  border-radius:var(--r);
+  color:var(--ink);
+  padding:10px 14px;
+  font-family:'Geist',sans-serif;
+  font-size:.88rem;
+  outline:none;
+  transition:border-color .12s, box-shadow .12s;
+}
+.search-input:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(42,92,232,.08);
+}
+.search-input::placeholder { color:var(--ink-4) }
+.btn-search {
+  padding:10px 20px;
+  background:var(--ink);
+  color:var(--white);
+  border:none;
+  border-radius:var(--r);
+  font-family:'Geist',sans-serif;
+  font-size:.82rem;
+  font-weight:500;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .12s, transform .1s;
+  flex-shrink:0;
+}
+.btn-search:hover  { background:#1a1a1a }
+.btn-search:active { transform:scale(.98) }
+.btn-search:disabled { background:var(--ink-4); cursor:not-allowed }
+
+/* user result layout */
+.user-card {
+  border:1px solid var(--rule);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  margin-bottom:28px;
+  animation:fadeUp .22s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(8px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+.user-card-top {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:20px 24px;
+  border-bottom:1px solid var(--rule);
+  background:var(--fill);
+  flex-wrap:wrap;
+  gap:14px;
+}
+.user-avatar {
+  width:44px; height:44px;
+  border-radius:50%;
+  background:var(--accent-bg);
+  border:1px solid #c7d3f8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Instrument Serif',serif;
+  font-size:1.1rem;
+  color:var(--accent);
+  flex-shrink:0;
+}
+.user-meta { flex:1; min-width:0 }
+.user-id {
+  font-family:'Geist',sans-serif;
+  font-size:.92rem;
+  font-weight:600;
+  color:var(--ink);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.user-sub { font-size:.72rem; color:var(--ink-4); margin-top:1px }
+
+/* stat strip inside card */
+.user-stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+.user-stat {
+  padding:16px 22px;
+  border-right:1px solid var(--rule);
+}
+.user-stat:last-child { border-right:none }
+.user-stat-label {
+  font-size:.62rem;
+  font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.user-stat-val {
+  font-family:'Instrument Serif',serif;
+  font-size:1.6rem;
+  line-height:1;
+  color:var(--ink);
+}
+.user-stat-val.accent { color:var(--accent) }
+.user-stat-val.green  { color:var(--green) }
+.user-stat-val.red    { color:var(--red) }
+.user-stat-val.amber  { color:var(--amber) }
+
+/* features section */
+.features-header {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.features-count { font-size:.72rem; color:var(--ink-4) }
+
+/* ════════════════════════════════════════════════════════════
+   SUCCESS SIMULATOR
+   ════════════════════════════════════════════════════════════ */
+.sim-layout { display:grid; grid-template-columns:1fr 340px; gap:32px; align-items:start }
+.sliders-panel { display:flex; flex-direction:column; gap:24px }
+.slider-item {}
+.slider-head {
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:10px;
+}
+.slider-name { font-size:.82rem; color:var(--ink-2); font-weight:500 }
+.slider-val {
+  font-family:'Instrument Serif',serif;
+  font-size:1.3rem;
+  color:var(--ink);
+  line-height:1;
+}
+input[type=range] {
+  width:100%;
+  -webkit-appearance:none;
+  height:3px;
+  background:var(--rule-dark);
+  border-radius:999px;
+  outline:none;
+  cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  width:16px; height:16px;
+  border-radius:50%;
+  background:var(--ink);
+  cursor:pointer;
+  border:2px solid var(--white);
+  box-shadow:0 0 0 1.5px var(--ink);
+  transition:transform .12s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.15) }
+input[type=range]::-moz-range-thumb {
+  width:16px; height:16px;
+  border-radius:50%;
+  background:var(--ink);
+  border:2px solid var(--white);
+  cursor:pointer;
+}
+.result-panel {
+  border:1px solid var(--rule);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  position:sticky;
+  top:24px;
+}
+.result-main {
+  padding:28px 24px 22px;
+  border-bottom:1px solid var(--rule);
+}
+.result-eyebrow { font-size:.62rem; font-weight:600; color:var(--ink-4); letter-spacing:.09em; text-transform:uppercase; margin-bottom:8px }
+.result-score {
+  font-family:'Instrument Serif',serif;
+  font-size:4rem;
+  line-height:1;
+  letter-spacing:-.03em;
+  margin-bottom:12px;
+  transition:color .3s;
+}
+.progress-track {
+  height:3px;
+  background:var(--rule);
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.progress-fill {
+  height:100%;
+  background:var(--ink);
+  border-radius:999px;
+  transition:width .4s cubic-bezier(.4,0,.2,1), background .3s;
+}
+.result-breakdown { padding:16px 24px }
+.breakdown-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid var(--rule);
+  font-size:.78rem;
+}
+.breakdown-row:last-child { border-bottom:none }
+.breakdown-name { color:var(--ink-3) }
+.breakdown-val  { font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums }
+.breakdown-bar-wrap { flex:1; margin:0 12px; height:3px; background:var(--rule); border-radius:999px; overflow:hidden }
+.breakdown-bar { height:100%; border-radius:999px; background:var(--ink-3); transition:width .4s }
+
+/* ─── insights page ──────────────────────────────────────────────────────── */
+.insights-grid { display:grid; grid-template-columns:1fr; gap:28px }
+
+/* ─── responsive ─────────────────────────────────────────────────────────── */
+@media (max-width:1080px) {
+  .sim-layout { grid-template-columns:1fr }
+  .result-panel { position:static }
+}
+@media (max-width:900px) {
+  :root { --sidebar-w:0px }
+  .sidebar { display:none }
+  .page-header { padding:28px 20px 20px }
+  .page-body { padding:24px 20px 48px }
+}
+@media (max-width:680px) {
+  .stat-row { grid-template-columns:1fr 1fr }
+  .stat-cell:nth-child(2) { border-right:none }
+  .stat-cell:nth-child(3) { border-top:1px solid var(--rule) }
+  .stat-cell:nth-child(4) { border-top:1px solid var(--rule); border-right:none }
+  .chart-grid { grid-template-columns:1fr }
+  .user-stats { grid-template-columns:1fr 1fr }
+  .user-stat:nth-child(2) { border-right:none }
+  .user-stat:nth-child(3) { border-top:1px solid var(--rule); grid-column:1/-1 }
 }
 </style>
 </head>
 <body>
-<div class="app-shell">
+<div class="shell">
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">SuccessLens</div>
-    <div class="sidebar-tagline">User Intelligence Platform</div>
-    <hr/>
-    <nav>
-      <button class="nav-item active" data-page="overview">
-        <span class="nav-icon">📊</span><span class="nav-label">Platform Overview</span>
-      </button>
-      <button class="nav-item" data-page="segmentation">
-        <span class="nav-icon">🗂️</span><span class="nav-label">User Segmentation</span>
-      </button>
-      <button class="nav-item" data-page="insights">
-        <span class="nav-icon">🧠</span><span class="nav-label">Behavior Insights</span>
-      </button>
-      <button class="nav-item" data-page="explorer">
-        <span class="nav-icon">🔍</span><span class="nav-label">User Explorer</span>
-      </button>
-      <button class="nav-item" data-page="simulator">
-        <span class="nav-icon">⚡</span><span class="nav-label">Success Simulator</span>
-      </button>
-    </nav>
-    <div class="sidebar-footer" id="sidebar-footer">Dataset · loading…</div>
-  </aside>
+<!-- ─── sidebar ─────────────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <span class="sb-wordmark">SuccessLens</span>
+    <span class="sb-tag">Analytics</span>
+  </div>
+  <div class="sb-section-label">Pages</div>
+  <nav>
+    <button class="nav-item active" data-page="overview">
+      <span class="nav-dot"></span><span class="nav-label">Platform Overview</span>
+    </button>
+    <button class="nav-item" data-page="segmentation">
+      <span class="nav-dot"></span><span class="nav-label">User Segmentation</span>
+    </button>
+    <button class="nav-item" data-page="insights">
+      <span class="nav-dot"></span><span class="nav-label">Behavior Insights</span>
+    </button>
+    <button class="nav-item" data-page="explorer">
+      <span class="nav-dot"></span><span class="nav-label">User Explorer</span>
+    </button>
+    <button class="nav-item" data-page="simulator">
+      <span class="nav-dot"></span><span class="nav-label">Success Simulator</span>
+    </button>
+  </nav>
+  <div class="sb-footer">
+    Dataset<br/><strong id="foot-count">—</strong> users
+  </div>
+</aside>
 
-  <!-- Main -->
-  <main class="main">
+<!-- ─── main ─────────────────────────────────────────────────────────────── -->
+<main class="main">
 
-    <!-- Platform Overview -->
-    <section class="page active" id="page-overview">
-      <div class="page-title">Platform Overview</div>
-      <div class="page-subtitle">High-level health of your user base</div>
-      <div id="overview-content"><div class="loader"><div class="spinner"></div>Loading data…</div></div>
-    </section>
+  <!-- PLATFORM OVERVIEW ──────────────────────────────────────────────────── -->
+  <section class="page active" id="page-overview">
+    <div class="page-header">
+      <div class="page-eyebrow">Analytics</div>
+      <div class="page-title">Platform <em>Overview</em></div>
+      <div class="page-sub">High-level health metrics across your entire user base.</div>
+    </div>
+    <div class="page-body">
+      <div id="overview-body">
+        <div class="loader"><div class="spin"></div>Loading data…</div>
+      </div>
+    </div>
+  </section>
 
-    <!-- User Segmentation -->
-    <section class="page" id="page-segmentation">
-      <div class="page-title">User Segmentation</div>
-      <div class="page-subtitle">Filter and explore users by success segment</div>
-      <div style="margin-bottom:16px">
-        <select id="seg-filter">
-          <option value="All">All Segments</option>
+  <!-- USER SEGMENTATION ──────────────────────────────────────────────────── -->
+  <section class="page" id="page-segmentation">
+    <div class="page-header">
+      <div class="page-eyebrow">Users</div>
+      <div class="page-title">User <em>Segmentation</em></div>
+      <div class="page-sub">Filter and browse users by their success segment.</div>
+    </div>
+    <div class="page-body">
+      <div class="filter-bar">
+        <span class="filter-label">Segment</span>
+        <select class="filter-select" id="seg-select">
+          <option value="All">All segments</option>
           <option value="High">High</option>
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
         </select>
+        <span class="result-count" id="seg-count"></span>
       </div>
-      <div id="seg-meta" style="margin-bottom:16px;color:#94a3b8;font-size:.9rem"></div>
-      <div id="seg-table"><div class="loader"><div class="spinner"></div>Loading…</div></div>
-    </section>
-
-    <!-- Behavior Insights -->
-    <section class="page" id="page-insights">
-      <div class="page-title">Behavior Insights</div>
-      <div class="page-subtitle">Feature correlations and success drivers</div>
-      <div id="insights-content"><div class="loader"><div class="spinner"></div>Computing correlations…</div></div>
-    </section>
-
-    <!-- User Explorer -->
-    <section class="page" id="page-explorer">
-      <div class="page-title">User Success Lookup</div>
-      <div class="page-subtitle">Enter a User ID to inspect individual metrics</div>
-      <div class="input-group">
-        <input type="text" id="user-id-input" placeholder="e.g. usr_00123"/>
-        <button class="btn" onclick="lookupUser()">Lookup</button>
+      <div id="seg-table">
+        <div class="loader"><div class="spin"></div>Loading…</div>
       </div>
-      <div id="explorer-result"></div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Success Simulator -->
-    <section class="page" id="page-simulator">
-      <div class="page-title">Success Simulator</div>
-      <div class="page-subtitle">Estimate success probability from behavioral inputs</div>
-      <div class="sliders-grid">
-        <div>
-          <div class="slider-group">
-            <label>Number of Events <span id="val-events">50</span></label>
-            <input type="range" id="sl-events" min="1" max="500" value="50" oninput="simUpdate()"/>
+  <!-- BEHAVIOR INSIGHTS ──────────────────────────────────────────────────── -->
+  <section class="page" id="page-insights">
+    <div class="page-header">
+      <div class="page-eyebrow">Analysis</div>
+      <div class="page-title">Behavior <em>Insights</em></div>
+      <div class="page-sub">Feature correlations and the strongest success drivers.</div>
+    </div>
+    <div class="page-body">
+      <div id="insights-body">
+        <div class="loader"><div class="spin"></div>Computing correlations…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USER EXPLORER ──────────────────────────────────────────────────────── -->
+  <section class="page" id="page-explorer">
+    <div class="page-header">
+      <div class="page-eyebrow">Lookup</div>
+      <div class="page-title">User <em>Explorer</em></div>
+      <div class="page-sub">Enter a user ID to inspect their full profile and all feature values.</div>
+    </div>
+    <div class="page-body">
+      <div class="search-row">
+        <input
+          class="search-input"
+          type="text"
+          id="uid-input"
+          placeholder="e.g. usr_00123"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="btn-search" id="uid-btn" onclick="lookupUser()">Look up</button>
+      </div>
+      <div id="explorer-body"></div>
+    </div>
+  </section>
+
+  <!-- SUCCESS SIMULATOR ──────────────────────────────────────────────────── -->
+  <section class="page" id="page-simulator">
+    <div class="page-header">
+      <div class="page-eyebrow">Simulator</div>
+      <div class="page-title">Success <em>Simulator</em></div>
+      <div class="page-sub">Adjust behavioral inputs to estimate a user's success probability.</div>
+    </div>
+    <div class="page-body">
+      <div class="sim-layout">
+        <!-- sliders -->
+        <div class="sliders-panel">
+          <div class="slider-item">
+            <div class="slider-head">
+              <span class="slider-name">Number of Events</span>
+              <span class="slider-val" id="v-events">50</span>
+            </div>
+            <input type="range" id="sl-events" min="1" max="500" value="50" oninput="simCalc()"/>
           </div>
-          <div class="slider-group" style="margin-top:20px">
-            <label>Sessions <span id="val-sessions">10</span></label>
-            <input type="range" id="sl-sessions" min="1" max="100" value="10" oninput="simUpdate()"/>
+          <div class="slider-item">
+            <div class="slider-head">
+              <span class="slider-name">Sessions</span>
+              <span class="slider-val" id="v-sessions">10</span>
+            </div>
+            <input type="range" id="sl-sessions" min="1" max="100" value="10" oninput="simCalc()"/>
           </div>
-          <div class="slider-group" style="margin-top:20px">
-            <label>Unique Features Used <span id="val-features">5</span></label>
-            <input type="range" id="sl-features" min="1" max="50" value="5" oninput="simUpdate()"/>
+          <div class="slider-item">
+            <div class="slider-head">
+              <span class="slider-name">Unique Features Used</span>
+              <span class="slider-val" id="v-features">5</span>
+            </div>
+            <input type="range" id="sl-features" min="1" max="50" value="5" oninput="simCalc()"/>
+          </div>
+
+          <div id="sim-chart-wrap" style="margin-top:8px">
+            <div class="loader"><div class="spin"></div>Move a slider to generate chart…</div>
           </div>
         </div>
-        <div>
-          <div class="metric-card">
-            <div class="metric-label">Predicted Probability</div>
-            <div class="metric-value metric-accent" id="sim-score" style="font-size:3rem;margin:8px 0">0.210</div>
-            <span id="sim-pill" class="pill pill-medium">Medium Success</span>
+
+        <!-- result panel -->
+        <div class="result-panel">
+          <div class="result-main">
+            <div class="result-eyebrow">Predicted probability</div>
+            <div class="result-score" id="sim-score">0.210</div>
+            <div class="progress-track">
+              <div class="progress-fill" id="sim-bar" style="width:21%"></div>
+            </div>
+            <span class="pill pill-medium" id="sim-pill">Medium</span>
+          </div>
+          <div class="result-breakdown">
+            <div class="breakdown-row">
+              <span class="breakdown-name">Events</span>
+              <div class="breakdown-bar-wrap"><div class="breakdown-bar" id="bb-events" style="width:10%"></div></div>
+              <span class="breakdown-val" id="bv-events">0.100</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-name">Sessions</span>
+              <div class="breakdown-bar-wrap"><div class="breakdown-bar" id="bb-sessions" style="width:50%"></div></div>
+              <span class="breakdown-val" id="bv-sessions">0.100</span>
+            </div>
+            <div class="breakdown-row">
+              <span class="breakdown-name">Features</span>
+              <div class="breakdown-bar-wrap"><div class="breakdown-bar" id="bb-features" style="width:50%"></div></div>
+              <span class="breakdown-val" id="bv-features">0.100</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="section-header">Probability Gauge</div>
-      <div class="progress-wrap"><div class="progress-bar" id="sim-progress" style="width:21%"></div></div>
-      <div class="section-header">Score Breakdown</div>
-      <div id="sim-chart"><div class="loader"><div class="spinner"></div>Move a slider to generate chart…</div></div>
-    </section>
+    </div>
+  </section>
 
-  </main>
+</main>
 </div>
 
 <script>
-// ── Navigation ────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+/* ── navigation ─────────────────────────────────────────────────────────── */
 document.querySelectorAll('.nav-item').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
-    if (btn.dataset.page === 'segmentation') loadSegmentation();
+    $('page-' + btn.dataset.page).classList.add('active');
+    if (btn.dataset.page === 'segmentation') loadSeg();
     if (btn.dataset.page === 'insights')     loadInsights();
   });
 });
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function pillHtml(seg) {
-  const cls = seg === 'High' ? 'pill-high' : seg === 'Low' ? 'pill-low' : 'pill-medium';
+/* ── helpers ─────────────────────────────────────────────────────────────── */
+function pill(seg) {
+  const cls = seg==='High'?'pill-high':seg==='Low'?'pill-low':'pill-medium';
   return `<span class="pill ${cls}">${seg}</span>`;
 }
 
-function buildTable(columns, rows) {
-  if (!rows.length) return '<p style="color:#64748b;font-size:.88rem;padding:12px 0">No records found.</p>';
+function buildTable(cols, rows) {
+  if (!rows.length) return '<p style="color:var(--ink-4);font-size:.82rem;padding:16px 0">No records found.</p>';
   let h = '<div class="table-wrap"><table><thead><tr>';
-  columns.forEach(c => { h += `<th>${c}</th>`; });
+  cols.forEach(c => { h += `<th>${c}</th>` });
   h += '</tr></thead><tbody>';
   rows.forEach(r => {
     h += '<tr>';
-    columns.forEach(c => { h += `<td>${r[c] ?? ''}</td>`; });
+    cols.forEach(c => { h += `<td>${r[c] ?? '—'}</td>` });
     h += '</tr>';
   });
-  h += '</tbody></table></div>';
-  return h;
+  return h + '</tbody></table></div>';
 }
 
-// ── Platform Overview ─────────────────────────────────────────────────────────
+/* ── overview ────────────────────────────────────────────────────────────── */
 async function loadOverview() {
   try {
     const d = await fetch('/api/overview').then(r => r.json());
-    document.getElementById('sidebar-footer').innerHTML =
-      `Dataset · <b>${d.total_users.toLocaleString()}</b> users`;
-    document.getElementById('overview-content').innerHTML = `
-      <div class="kpi-row">
-        <div class="metric-card"><div class="metric-label">Total Users</div><div class="metric-value metric-accent">${d.total_users.toLocaleString()}</div></div>
-        <div class="metric-card"><div class="metric-label">Avg Success Prob.</div><div class="metric-value metric-accent">${d.avg_success}</div></div>
-        <div class="metric-card"><div class="metric-label">High-Success Users</div><div class="metric-value metric-green">${d.high_users.toLocaleString()}</div></div>
-        <div class="metric-card"><div class="metric-label">Low-Success Users</div><div class="metric-value metric-red">${d.low_users.toLocaleString()}</div></div>
-      </div>
-      <div class="charts-row">
-        <div class="chart-box">
-          <div class="section-header" style="margin-top:0">Success Probability Distribution</div>
-          <img src="${d.hist_chart}" alt="histogram"/>
+    $('foot-count').textContent = d.total_users.toLocaleString();
+    $('overview-body').innerHTML = `
+      <div class="stat-row">
+        <div class="stat-cell">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value accent">${d.total_users.toLocaleString()}</div>
         </div>
-        <div class="chart-box">
-          <div class="section-header" style="margin-top:0">User Segments</div>
-          <img src="${d.seg_chart}" alt="segments"/>
+        <div class="stat-cell">
+          <div class="stat-label">Avg Success Prob.</div>
+          <div class="stat-value">${d.avg_success}</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">High-Success</div>
+          <div class="stat-value green">${d.high_users.toLocaleString()}</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Low-Success</div>
+          <div class="stat-value red">${d.low_users.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-cell">
+          <div class="chart-cell-label">Success Probability Distribution</div>
+          <img src="${d.hist_chart}" alt="Probability histogram"/>
+        </div>
+        <div class="chart-cell">
+          <div class="chart-cell-label">Users by Segment</div>
+          <img src="${d.seg_chart}" alt="Segment bar chart"/>
         </div>
       </div>`;
   } catch(e) {
-    document.getElementById('overview-content').innerHTML =
-      '<div class="alert-warn">⚠️ Failed to load data. Please refresh.</div>';
+    $('overview-body').innerHTML = '<div class="alert alert-err">Failed to load data. Please refresh.</div>';
   }
 }
 
-// ── User Segmentation ─────────────────────────────────────────────────────────
-async function loadSegmentation() {
-  const seg = document.getElementById('seg-filter').value;
-  document.getElementById('seg-table').innerHTML =
-    '<div class="loader"><div class="spinner"></div>Filtering…</div>';
-  const d = await fetch(`/api/segmentation?segment=${encodeURIComponent(seg)}`).then(r => r.json());
-  const badge = seg !== 'All' ? pillHtml(seg) : '';
-  document.getElementById('seg-meta').innerHTML =
-    `Showing <b style="color:#e2e8f0">${d.count.toLocaleString()}</b> users ${badge}`;
-  document.getElementById('seg-table').innerHTML = buildTable(d.columns, d.rows);
+/* ── segmentation ────────────────────────────────────────────────────────── */
+async function loadSeg() {
+  const seg = $('seg-select').value;
+  $('seg-table').innerHTML = '<div class="loader"><div class="spin"></div>Filtering…</div>';
+  const d = await fetch(`/api/segmentation?segment=${encodeURIComponent(seg)}`).then(r=>r.json());
+  $('seg-count').textContent = `${d.count.toLocaleString()} users`;
+  $('seg-table').innerHTML = buildTable(d.columns, d.rows);
 }
+$('seg-select').addEventListener('change', loadSeg);
 
-document.getElementById('seg-filter').addEventListener('change', loadSegmentation);
-
-// ── Behavior Insights ─────────────────────────────────────────────────────────
-let insightsLoaded = false;
+/* ── insights ────────────────────────────────────────────────────────────── */
+let _insightsLoaded = false;
 async function loadInsights() {
-  if (insightsLoaded) return;
-  insightsLoaded = true;
+  if (_insightsLoaded) return;
+  _insightsLoaded = true;
   const d = await fetch('/api/insights').then(r => r.json());
-  document.getElementById('insights-content').innerHTML = `
-    <div class="section-header">Correlation Heatmap</div>
-    <div class="chart-box"><img src="${d.heatmap_chart}" alt="heatmap"/></div>
-    <div class="section-header">Top Features Correlated with Success</div>
-    <div class="chart-box"><img src="${d.topfeat_chart}" alt="top features"/></div>`;
+  $('insights-body').innerHTML = `
+    <div class="insights-grid">
+      <div>
+        <div class="sec-label">Correlation Heatmap</div>
+        <div class="chart-grid" style="grid-template-columns:1fr">
+          <div class="chart-cell"><img src="${d.heatmap_chart}" alt="heatmap"/></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label">Top Features Correlated with Success</div>
+        <div class="chart-grid" style="grid-template-columns:1fr">
+          <div class="chart-cell"><img src="${d.topfeat_chart}" alt="top features"/></div>
+        </div>
+      </div>
+    </div>`;
 }
 
-// ── User Explorer ─────────────────────────────────────────────────────────────
-document.getElementById('user-id-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') lookupUser();
-});
+/* ── user explorer ───────────────────────────────────────────────────────── */
+$('uid-input').addEventListener('keydown', e => { if (e.key === 'Enter') lookupUser() });
 
 async function lookupUser() {
-  const uid = document.getElementById('user-id-input').value.trim();
+  const uid = $('uid-input').value.trim();
   if (!uid) return;
-  document.getElementById('explorer-result').innerHTML =
-    '<div class="loader"><div class="spinner"></div>Looking up user…</div>';
-  const d = await fetch(`/api/user?id=${encodeURIComponent(uid)}`).then(r => r.json());
-  if (!d.found) {
-    document.getElementById('explorer-result').innerHTML =
-      `<div class="alert-warn">⚠️ ${d.error}</div>`;
-    return;
+  const body = $('explorer-body');
+  body.innerHTML = '<div class="loader"><div class="spin"></div>Looking up…</div>';
+  $('uid-btn').disabled = true;
+  try {
+    const d = await fetch(`/api/user?id=${encodeURIComponent(uid)}`).then(r=>r.json());
+    $('uid-btn').disabled = false;
+    if (!d.found) {
+      body.innerHTML = `<div class="alert alert-warn">No user found with ID <strong>${uid}</strong>. Check the ID and try again.</div>`;
+      return;
+    }
+    const scoreClass = d.prob >= 0.7 ? 'green' : d.prob <= 0.3 ? 'red' : 'amber';
+    const initial = uid.replace(/[^a-zA-Z]/g,'')[0]?.toUpperCase() || uid[0]?.toUpperCase() || '?';
+    body.innerHTML = `
+      <div class="user-card">
+        <div class="user-card-top">
+          <div class="user-avatar">${initial}</div>
+          <div class="user-meta">
+            <div class="user-id">${d.user_id}</div>
+            <div class="user-sub">User record · ${d.columns.length} features</div>
+          </div>
+          <div style="margin-left:auto">${pill(d.segment)}</div>
+        </div>
+        <div class="user-stats">
+          <div class="user-stat">
+            <div class="user-stat-label">Success probability</div>
+            <div class="user-stat-val ${scoreClass}">${d.prob}</div>
+          </div>
+          <div class="user-stat">
+            <div class="user-stat-label">Segment</div>
+            <div style="padding-top:6px">${pill(d.segment)}</div>
+          </div>
+          <div class="user-stat">
+            <div class="user-stat-label">Features captured</div>
+            <div class="user-stat-val accent">${d.columns.length}</div>
+          </div>
+        </div>
+      </div>
+      <div class="features-header">
+        <div class="sec-label" style="margin:0">All Features</div>
+        <div class="features-count">Showing ${d.rows.length} row${d.rows.length!==1?'s':''} · ${d.columns.length} columns</div>
+      </div>
+      ${buildTable(d.columns, d.rows)}`;
+  } catch(e) {
+    $('uid-btn').disabled = false;
+    body.innerHTML = '<div class="alert alert-err">Request failed. Please try again.</div>';
   }
-  document.getElementById('explorer-result').innerHTML = `
-    <hr class="divider"/>
-    <div class="three-col">
-      <div class="metric-card"><div class="metric-label">Success Probability</div><div class="metric-value metric-accent">${d.prob}</div></div>
-      <div class="metric-card"><div class="metric-label">Segment</div><div style="margin-top:10px">${pillHtml(d.segment)}</div></div>
-      <div class="metric-card"><div class="metric-label">User ID</div><div class="metric-value" style="font-size:1rem;color:#64748b">${d.user_id}</div></div>
-    </div>
-    <div class="section-header">All Features</div>
-    ${buildTable(d.columns, d.rows)}`;
 }
 
-// ── Success Simulator ─────────────────────────────────────────────────────────
-let simTimer = null;
+/* ── simulator ───────────────────────────────────────────────────────────── */
+let _simTimer = null;
+function simCalc() {
+  const ev  = +$('sl-events').value;
+  const ses = +$('sl-sessions').value;
+  const ft  = +$('sl-features').value;
+  $('v-events').textContent   = ev;
+  $('v-sessions').textContent = ses;
+  $('v-features').textContent = ft;
 
-function simUpdate() {
-  const events   = +document.getElementById('sl-events').value;
-  const sessions = +document.getElementById('sl-sessions').value;
-  const features = +document.getElementById('sl-features').value;
+  const score = Math.min(ev*0.002 + ses*0.01 + ft*0.02, 1.0);
+  $('sim-score').textContent = score.toFixed(3);
+  $('sim-bar').style.width   = (score*100)+'%';
 
-  document.getElementById('val-events').textContent   = events;
-  document.getElementById('val-sessions').textContent = sessions;
-  document.getElementById('val-features').textContent = features;
+  // Color coding
+  const col = score > 0.7 ? 'var(--green)' : score > 0.3 ? 'var(--amber)' : 'var(--red)';
+  $('sim-score').style.color = col;
+  $('sim-bar').style.background = col;
 
-  const score = Math.min(events * 0.002 + sessions * 0.01 + features * 0.02, 1.0);
-  document.getElementById('sim-score').textContent         = score.toFixed(3);
-  document.getElementById('sim-progress').style.width      = (score * 100) + '%';
+  // Pill
+  const p = $('sim-pill');
+  if (score > 0.7)      { p.className='pill pill-high';   p.textContent='High' }
+  else if (score > 0.3) { p.className='pill pill-medium'; p.textContent='Medium' }
+  else                  { p.className='pill pill-low';    p.textContent='Low' }
 
-  let label, cls;
-  if (score > 0.7)      { label = 'High Success';   cls = 'pill-high'; }
-  else if (score > 0.3) { label = 'Medium Success'; cls = 'pill-medium'; }
-  else                  { label = 'Low Success';     cls = 'pill-low'; }
+  // Inline breakdown bars (no server round-trip)
+  const ev_c  = ev  * 0.002;
+  const ses_c = ses * 0.01;
+  const ft_c  = ft  * 0.02;
+  const maxC  = Math.max(ev_c, ses_c, ft_c, 0.001);
+  $('bv-events').textContent   = ev_c.toFixed(3);
+  $('bv-sessions').textContent = ses_c.toFixed(3);
+  $('bv-features').textContent = ft_c.toFixed(3);
+  $('bb-events').style.width   = (ev_c/maxC*100)+'%';
+  $('bb-sessions').style.width = (ses_c/maxC*100)+'%';
+  $('bb-features').style.width = (ft_c/maxC*100)+'%';
 
-  const pill = document.getElementById('sim-pill');
-  pill.textContent = label;
-  pill.className   = `pill ${cls}`;
-
-  clearTimeout(simTimer);
-  simTimer = setTimeout(() => fetchSimChart(events, sessions, features), 400);
+  // Debounced chart from server
+  clearTimeout(_simTimer);
+  _simTimer = setTimeout(() => {
+    fetch(`/api/simulator?events=${ev}&sessions=${ses}&features=${ft}`)
+      .then(r => r.json())
+      .then(d => {
+        $('sim-chart-wrap').innerHTML = `
+          <div class="sec-label" style="margin-top:0">Score Breakdown Chart</div>
+          <div class="chart-grid" style="grid-template-columns:1fr">
+            <div class="chart-cell"><img src="${d.breakdown_img}" alt="breakdown"/></div>
+          </div>`;
+      });
+  }, 420);
 }
 
-async function fetchSimChart(events, sessions, features) {
-  const d = await fetch(`/api/simulator?events=${events}&sessions=${sessions}&features=${features}`)
-    .then(r => r.json());
-  document.getElementById('sim-chart').innerHTML =
-    `<div class="chart-box"><img src="${d.breakdown_img}" alt="breakdown"/></div>`;
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
+/* ── boot ────────────────────────────────────────────────────────────────── */
 loadOverview();
+simCalc();
 </script>
 </body>
 </html>
