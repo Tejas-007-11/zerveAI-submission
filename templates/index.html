@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SuccessLens 🔭</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset ──────────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'DM Sans',sans-serif;background:#0b0f1a;color:#e2e8f0;height:100%;min-height:100vh}
+body{background-color:#0b0f1a;background-image:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(99,102,241,.18) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(20,184,166,.12) 0%,transparent 60%);background-attachment:fixed}
+
+/* ── Layout ─────────────────────────────────────────────────────────────────── */
+.app-shell{display:flex;min-height:100vh}
+
+/* ── Sidebar ────────────────────────────────────────────────────────────────── */
+.sidebar{width:230px;flex-shrink:0;background:#111827;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;padding:28px 20px 24px;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto}
+.sidebar-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.02em;background:linear-gradient(135deg,#818cf8 0%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.sidebar-tagline{font-size:0.72rem;color:#475569;letter-spacing:.06em;text-transform:uppercase;margin-bottom:24px}
+.sidebar hr{border:none;border-top:1px solid rgba(255,255,255,.07);margin:0 0 20px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:0.9rem;color:#64748b;transition:background .18s,color .18s;margin-bottom:3px;user-select:none;border:none;background:transparent;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#cbd5e1}
+.nav-item.active{background:rgba(129,140,248,.13);color:#818cf8}
+.nav-icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-footer{margin-top:auto;padding-top:20px;font-size:0.72rem;color:#334155}
+.sidebar-footer b{color:#475569}
+
+/* ── Main ───────────────────────────────────────────────────────────────────── */
+.main{margin-left:230px;flex:1;padding:40px 36px 60px;min-height:100vh}
+
+/* ── Page title ─────────────────────────────────────────────────────────────── */
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2.1rem;letter-spacing:-0.03em;color:#f1f5f9;margin-bottom:4px}
+.page-subtitle{font-size:0.88rem;color:#475569;margin-bottom:32px}
+
+/* ── KPI row ────────────────────────────────────────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.metric-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:22px 24px;transition:border-color .25s,transform .2s}
+.metric-card:hover{border-color:rgba(129,140,248,.35);transform:translateY(-2px)}
+.metric-label{font-size:0.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.metric-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;color:#f1f5f9;line-height:1}
+.metric-accent{color:#818cf8}
+.metric-green{color:#34d399}
+.metric-red{color:#f87171}
+
+/* ── Section header ─────────────────────────────────────────────────────────── */
+.section-header{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;color:#cbd5e1;border-left:3px solid #818cf8;padding-left:12px;margin:32px 0 16px}
+
+/* ── Charts ─────────────────────────────────────────────────────────────────── */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.chart-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px}
+.chart-box img{width:100%;border-radius:8px;display:block}
+
+/* ── Pills ──────────────────────────────────────────────────────────────────── */
+.pill{display:inline-block;padding:3px 12px;border-radius:999px;font-size:0.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.pill-high{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
+.pill-medium{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.pill-low{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+
+/* ── Divider ────────────────────────────────────────────────────────────────── */
+hr.divider{border:none;border-top:1px solid rgba(255,255,255,.07);margin:20px 0}
+
+/* ── Select ─────────────────────────────────────────────────────────────────── */
+select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e2e8f0;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;cursor:pointer;appearance:none;min-width:180px}
+select:focus{border-color:rgba(129,140,248,.5)}
+select option{background:#1e293b}
+
+/* ── Table ──────────────────────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.07);margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:0.83rem}
+thead th{background:rgba(255,255,255,.05);color:#64748b;text-transform:uppercase;letter-spacing:.06em;font-size:0.7rem;padding:10px 14px;text-align:left;white-space:nowrap;position:sticky;top:0}
+tbody tr{border-top:1px solid rgba(255,255,255,.04);transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody td{padding:9px 14px;color:#cbd5e1;white-space:nowrap}
+
+/* ── Text input ─────────────────────────────────────────────────────────────── */
+.input-group{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+input[type="text"]{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#e2e8f0;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;width:280px}
+input[type="text"]:focus{border-color:rgba(129,140,248,.5)}
+input[type="text"]::placeholder{color:#475569}
+.btn{padding:10px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#818cf8,#6366f1);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:opacity .2s,transform .15s}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* ── Sliders ────────────────────────────────────────────────────────────────── */
+.sliders-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:24px}
+.slider-group label{display:flex;justify-content:space-between;font-size:0.85rem;color:#94a3b8;margin-bottom:8px}
+.slider-group label span{color:#818cf8;font-weight:600}
+input[type="range"]{width:100%;-webkit-appearance:none;height:4px;background:rgba(255,255,255,.08);border-radius:999px;outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#818cf8,#34d399);cursor:pointer;box-shadow:0 0 6px rgba(129,140,248,.5)}
+input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#818cf8,#34d399);border:none;cursor:pointer}
+
+/* ── Progress bar ───────────────────────────────────────────────────────────── */
+.progress-wrap{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:12px 0 28px}
+.progress-bar{height:100%;background:linear-gradient(90deg,#818cf8,#34d399);border-radius:999px;transition:width .5s ease}
+
+/* ── Loader ─────────────────────────────────────────────────────────────────── */
+.loader{display:flex;align-items:center;gap:10px;color:#475569;font-size:0.85rem;padding:40px 0}
+.spinner{width:20px;height:20px;border:2px solid rgba(129,140,248,.2);border-top-color:#818cf8;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Alert ──────────────────────────────────────────────────────────────────── */
+.alert-warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:12px 18px;color:#fbbf24;font-size:0.88rem;margin-top:12px}
+
+/* ── 3-col ──────────────────────────────────────────────────────────────────── */
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+
+/* ── Pages ──────────────────────────────────────────────────────────────────── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#1e293b;border-radius:3px}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{width:60px;padding:20px 10px}
+  .nav-label,.sidebar-brand,.sidebar-tagline,.sidebar hr,.sidebar-footer{display:none}
+  .main{margin-left:60px;padding:24px 18px 40px}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .charts-row,.sliders-grid,.three-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">SuccessLens</div>
+    <div class="sidebar-tagline">User Intelligence Platform</div>
+    <hr/>
+    <nav>
+      <button class="nav-item active" data-page="overview">
+        <span class="nav-icon">📊</span><span class="nav-label">Platform Overview</span>
+      </button>
+      <button class="nav-item" data-page="segmentation">
+        <span class="nav-icon">🗂️</span><span class="nav-label">User Segmentation</span>
+      </button>
+      <button class="nav-item" data-page="insights">
+        <span class="nav-icon">🧠</span><span class="nav-label">Behavior Insights</span>
+      </button>
+      <button class="nav-item" data-page="explorer">
+        <span class="nav-icon">🔍</span><span class="nav-label">User Explorer</span>
+      </button>
+      <button class="nav-item" data-page="simulator">
+        <span class="nav-icon">⚡</span><span class="nav-label">Success Simulator</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer" id="sidebar-footer">Dataset · loading…</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Platform Overview -->
+    <section class="page active" id="page-overview">
+      <div class="page-title">Platform Overview</div>
+      <div class="page-subtitle">High-level health of your user base</div>
+      <div id="overview-content"><div class="loader"><div class="spinner"></div>Loading data…</div></div>
+    </section>
+
+    <!-- User Segmentation -->
+    <section class="page" id="page-segmentation">
+      <div class="page-title">User Segmentation</div>
+      <div class="page-subtitle">Filter and explore users by success segment</div>
+      <div style="margin-bottom:16px">
+        <select id="seg-filter">
+          <option value="All">All Segments</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+      <div id="seg-meta" style="margin-bottom:16px;color:#94a3b8;font-size:.9rem"></div>
+      <div id="seg-table"><div class="loader"><div class="spinner"></div>Loading…</div></div>
+    </section>
+
+    <!-- Behavior Insights -->
+    <section class="page" id="page-insights">
+      <div class="page-title">Behavior Insights</div>
+      <div class="page-subtitle">Feature correlations and success drivers</div>
+      <div id="insights-content"><div class="loader"><div class="spinner"></div>Computing correlations…</div></div>
+    </section>
+
+    <!-- User Explorer -->
+    <section class="page" id="page-explorer">
+      <div class="page-title">User Success Lookup</div>
+      <div class="page-subtitle">Enter a User ID to inspect individual metrics</div>
+      <div class="input-group">
+        <input type="text" id="user-id-input" placeholder="e.g. usr_00123"/>
+        <button class="btn" onclick="lookupUser()">Lookup</button>
+      </div>
+      <div id="explorer-result"></div>
+    </section>
+
+    <!-- Success Simulator -->
+    <section class="page" id="page-simulator">
+      <div class="page-title">Success Simulator</div>
+      <div class="page-subtitle">Estimate success probability from behavioral inputs</div>
+      <div class="sliders-grid">
+        <div>
+          <div class="slider-group">
+            <label>Number of Events <span id="val-events">50</span></label>
+            <input type="range" id="sl-events" min="1" max="500" value="50" oninput="simUpdate()"/>
+          </div>
+          <div class="slider-group" style="margin-top:20px">
+            <label>Sessions <span id="val-sessions">10</span></label>
+            <input type="range" id="sl-sessions" min="1" max="100" value="10" oninput="simUpdate()"/>
+          </div>
+          <div class="slider-group" style="margin-top:20px">
+            <label>Unique Features Used <span id="val-features">5</span></label>
+            <input type="range" id="sl-features" min="1" max="50" value="5" oninput="simUpdate()"/>
+          </div>
+        </div>
+        <div>
+          <div class="metric-card">
+            <div class="metric-label">Predicted Probability</div>
+            <div class="metric-value metric-accent" id="sim-score" style="font-size:3rem;margin:8px 0">0.210</div>
+            <span id="sim-pill" class="pill pill-medium">Medium Success</span>
+          </div>
+        </div>
+      </div>
+      <div class="section-header">Probability Gauge</div>
+      <div class="progress-wrap"><div class="progress-bar" id="sim-progress" style="width:21%"></div></div>
+      <div class="section-header">Score Breakdown</div>
+      <div id="sim-chart"><div class="loader"><div class="spinner"></div>Move a slider to generate chart…</div></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── Navigation ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    if (btn.dataset.page === 'segmentation') loadSegmentation();
+    if (btn.dataset.page === 'insights')     loadInsights();
+  });
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function pillHtml(seg) {
+  const cls = seg === 'High' ? 'pill-high' : seg === 'Low' ? 'pill-low' : 'pill-medium';
+  return `<span class="pill ${cls}">${seg}</span>`;
+}
+
+function buildTable(columns, rows) {
+  if (!rows.length) return '<p style="color:#64748b;font-size:.88rem;padding:12px 0">No records found.</p>';
+  let h = '<div class="table-wrap"><table><thead><tr>';
+  columns.forEach(c => { h += `<th>${c}</th>`; });
+  h += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    h += '<tr>';
+    columns.forEach(c => { h += `<td>${r[c] ?? ''}</td>`; });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
+}
+
+// ── Platform Overview ─────────────────────────────────────────────────────────
+async function loadOverview() {
+  try {
+    const d = await fetch('/api/overview').then(r => r.json());
+    document.getElementById('sidebar-footer').innerHTML =
+      `Dataset · <b>${d.total_users.toLocaleString()}</b> users`;
+    document.getElementById('overview-content').innerHTML = `
+      <div class="kpi-row">
+        <div class="metric-card"><div class="metric-label">Total Users</div><div class="metric-value metric-accent">${d.total_users.toLocaleString()}</div></div>
+        <div class="metric-card"><div class="metric-label">Avg Success Prob.</div><div class="metric-value metric-accent">${d.avg_success}</div></div>
+        <div class="metric-card"><div class="metric-label">High-Success Users</div><div class="metric-value metric-green">${d.high_users.toLocaleString()}</div></div>
+        <div class="metric-card"><div class="metric-label">Low-Success Users</div><div class="metric-value metric-red">${d.low_users.toLocaleString()}</div></div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="section-header" style="margin-top:0">Success Probability Distribution</div>
+          <img src="${d.hist_chart}" alt="histogram"/>
+        </div>
+        <div class="chart-box">
+          <div class="section-header" style="margin-top:0">User Segments</div>
+          <img src="${d.seg_chart}" alt="segments"/>
+        </div>
+      </div>`;
+  } catch(e) {
+    document.getElementById('overview-content').innerHTML =
+      '<div class="alert-warn">⚠️ Failed to load data. Please refresh.</div>';
+  }
+}
+
+// ── User Segmentation ─────────────────────────────────────────────────────────
+async function loadSegmentation() {
+  const seg = document.getElementById('seg-filter').value;
+  document.getElementById('seg-table').innerHTML =
+    '<div class="loader"><div class="spinner"></div>Filtering…</div>';
+  const d = await fetch(`/api/segmentation?segment=${encodeURIComponent(seg)}`).then(r => r.json());
+  const badge = seg !== 'All' ? pillHtml(seg) : '';
+  document.getElementById('seg-meta').innerHTML =
+    `Showing <b style="color:#e2e8f0">${d.count.toLocaleString()}</b> users ${badge}`;
+  document.getElementById('seg-table').innerHTML = buildTable(d.columns, d.rows);
+}
+
+document.getElementById('seg-filter').addEventListener('change', loadSegmentation);
+
+// ── Behavior Insights ─────────────────────────────────────────────────────────
+let insightsLoaded = false;
+async function loadInsights() {
+  if (insightsLoaded) return;
+  insightsLoaded = true;
+  const d = await fetch('/api/insights').then(r => r.json());
+  document.getElementById('insights-content').innerHTML = `
+    <div class="section-header">Correlation Heatmap</div>
+    <div class="chart-box"><img src="${d.heatmap_chart}" alt="heatmap"/></div>
+    <div class="section-header">Top Features Correlated with Success</div>
+    <div class="chart-box"><img src="${d.topfeat_chart}" alt="top features"/></div>`;
+}
+
+// ── User Explorer ─────────────────────────────────────────────────────────────
+document.getElementById('user-id-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') lookupUser();
+});
+
+async function lookupUser() {
+  const uid = document.getElementById('user-id-input').value.trim();
+  if (!uid) return;
+  document.getElementById('explorer-result').innerHTML =
+    '<div class="loader"><div class="spinner"></div>Looking up user…</div>';
+  const d = await fetch(`/api/user?id=${encodeURIComponent(uid)}`).then(r => r.json());
+  if (!d.found) {
+    document.getElementById('explorer-result').innerHTML =
+      `<div class="alert-warn">⚠️ ${d.error}</div>`;
+    return;
+  }
+  document.getElementById('explorer-result').innerHTML = `
+    <hr class="divider"/>
+    <div class="three-col">
+      <div class="metric-card"><div class="metric-label">Success Probability</div><div class="metric-value metric-accent">${d.prob}</div></div>
+      <div class="metric-card"><div class="metric-label">Segment</div><div style="margin-top:10px">${pillHtml(d.segment)}</div></div>
+      <div class="metric-card"><div class="metric-label">User ID</div><div class="metric-value" style="font-size:1rem;color:#64748b">${d.user_id}</div></div>
+    </div>
+    <div class="section-header">All Features</div>
+    ${buildTable(d.columns, d.rows)}`;
+}
+
+// ── Success Simulator ─────────────────────────────────────────────────────────
+let simTimer = null;
+
+function simUpdate() {
+  const events   = +document.getElementById('sl-events').value;
+  const sessions = +document.getElementById('sl-sessions').value;
+  const features = +document.getElementById('sl-features').value;
+
+  document.getElementById('val-events').textContent   = events;
+  document.getElementById('val-sessions').textContent = sessions;
+  document.getElementById('val-features').textContent = features;
+
+  const score = Math.min(events * 0.002 + sessions * 0.01 + features * 0.02, 1.0);
+  document.getElementById('sim-score').textContent         = score.toFixed(3);
+  document.getElementById('sim-progress').style.width      = (score * 100) + '%';
+
+  let label, cls;
+  if (score > 0.7)      { label = 'High Success';   cls = 'pill-high'; }
+  else if (score > 0.3) { label = 'Medium Success'; cls = 'pill-medium'; }
+  else                  { label = 'Low Success';     cls = 'pill-low'; }
+
+  const pill = document.getElementById('sim-pill');
+  pill.textContent = label;
+  pill.className   = `pill ${cls}`;
+
+  clearTimeout(simTimer);
+  simTimer = setTimeout(() => fetchSimChart(events, sessions, features), 400);
+}
+
+async function fetchSimChart(events, sessions, features) {
+  const d = await fetch(`/api/simulator?events=${events}&sessions=${sessions}&features=${features}`)
+    .then(r => r.json());
+  document.getElementById('sim-chart').innerHTML =
+    `<div class="chart-box"><img src="${d.breakdown_img}" alt="breakdown"/></div>`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadOverview();
+</script>
+</body>
+</html>
